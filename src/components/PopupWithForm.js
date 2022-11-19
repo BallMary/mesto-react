@@ -21,7 +21,6 @@ function PopupWithForm({ title, name, textButton, children, isOpen, onClose }) {
             className={`popup__container popup__container_${name}`}
             id="avatar"
             name="form-edit"
-            noValidate
           >
             {children}
             <button

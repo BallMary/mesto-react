@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
 function Header() {
   return (
-<header className="header">
-    <div alt='Логотип проекта Место' className="header__logo"></div>
-</header>
+    <header className="header">
+      <div alt="Логотип проекта Место" className="header__logo"></div>
+    </header>
   );
 }
 

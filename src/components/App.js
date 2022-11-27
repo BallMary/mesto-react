@@ -4,12 +4,27 @@ import Header from "./Header";
 import Main from "./Main";
 import PopupWithForm from "./PopupWithForm";
 import ImagePopup from "./ImagePopup";
+import api from "../utils/api";
+import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarClick] = useState(false);
   const [isEditProfilePopupOpen, setIsEditProfileClick] = useState(false);
   const [isAddPlacePopupOpen, setIsAddPlaceClick] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
+  const [currentUser, setCurrentUser] = useState({});
+
+  useEffect(() => {
+    api
+      .getUserInfo()
+      .then((userData) => {
+        console.log(userData);
+        setCurrentUser(userData);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   const handleEditAvatarClick = () => {
     setIsEditAvatarClick(true);
@@ -47,7 +62,7 @@ function App() {
   });
 
   return (
-    <>
+    <CurrentUserContext.Provider value={{ currentUser }}>
       <div className="page">
         <Header />
         <Main
@@ -169,7 +184,7 @@ function App() {
         </div> */}
         <Footer />
       </div>
-    </>
+    </CurrentUserContext.Provider>
   );
 }
 

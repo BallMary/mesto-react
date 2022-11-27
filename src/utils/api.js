@@ -50,19 +50,20 @@ class Api {
     }).then(this._checkResponse);
   }
 
-  likeCard(cardId) {
+  changeLikeCardStatus(cardId, like) {
+    const methodName = like ? "PUT" : "DELETE";
     return fetch(`${this.url}/cards/${cardId}/likes`, {
-      method: "PUT",
+      method: methodName,
       headers: this._headers,
     }).then(this._checkResponse);
   }
 
-  removeLikeCard(cardId) {
-    return fetch(`${this.url}/cards/${cardId}/likes`, {
-      method: "DELETE",
-      headers: this._headers,
-    }).then(this._checkResponse);
-  }
+  // removeLikeCard(cardId) {
+  //   return fetch(`${this.url}/cards/${cardId}/likes`, {
+  //     method: "DELETE",
+  //     headers: this._headers,
+  //   }).then(this._checkResponse);
+  // }
 
   editAvatar(avatar) {
     return fetch(`${this.url}/users/me/avatar`, {

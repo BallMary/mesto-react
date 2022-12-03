@@ -8,26 +8,46 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
+import DeletePopup from "./DeletePopup";
 
 function App() {
-  const [isEditAvatarPopupOpen, setIsEditAvatarClick] = useState(false);
-  const [isEditProfilePopupOpen, setIsEditProfileClick] = useState(false);
-  const [isAddPlacePopupOpen, setIsAddPlaceClick] = useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = useState(false);
+  const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = useState(false);
   const [selectedCard, setSelectedCard] = useState({});
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
+  const [card, setCard] = useState({});
+  const [isOpenPopup, setIsOpenPopup] = useState(false);
+
+  function handleConfirmPopupOpen(card) {
+    setIsOpenPopup(true);
+    setCard(card);
+  }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some((i) => i._id === currentUser._id);
-    api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
-      setCards((state) => state.map((c) => (c._id === card._id ? newCard : c)));
-    });
+    api
+      .changeLikeCardStatus(card._id, !isLiked)
+      .then((newCard) => {
+        setCards((state) =>
+          state.map((c) => (c._id === card._id ? newCard : c))
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   function handleCardDelete(card) {
-    api.deleteCard(card._id).then(() => {
-      setCards(() => cards.filter((c) => c._id !== card._id));
-    });
+    api
+      .deleteCard(card._id)
+      .then(() => {
+        setCards(() => cards.filter((c) => c._id !== card._id));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   useEffect(() => {
@@ -53,21 +73,23 @@ function App() {
   }, []);
 
   const handleEditAvatarClick = () => {
-    setIsEditAvatarClick(true);
+    setIsEditAvatarPopupOpen(true);
   };
 
   const handleEditProfileClick = () => {
-    setIsEditProfileClick(true);
+    setIsEditProfilePopupOpen(true);
   };
 
   const handleAddPlaceClick = () => {
-    setIsAddPlaceClick(true);
+    setIsAddPlacePopupOpen(true);
   };
   const closeAllPopups = () => {
-    setIsAddPlaceClick(false);
-    setIsEditAvatarClick(false);
-    setIsEditProfileClick(false);
+    setIsAddPlacePopupOpen(false);
+    setIsEditAvatarPopupOpen(false);
+    setIsEditProfilePopupOpen(false);
     setSelectedCard({});
+    setCard({});
+    setIsOpenPopup(false);
   };
 
   const handleCardClick = (card) => {
@@ -106,19 +128,22 @@ function App() {
         closeAllPopups();
       })
       .catch((err) => console.log(err));
-    card.name = "";
   };
 
   useEffect(() => {
     const closeEscape = (evt) => {
-      evt.key === "Escape" && closeAllPopups({});
+      evt.key === "Escape" && closeAllPopups();
     };
-    return isAddPlacePopupOpen ||
+    if (
+      isAddPlacePopupOpen ||
       isEditAvatarPopupOpen ||
       isEditProfilePopupOpen ||
-      selectedCard
-      ? document.addEventListener("keydown", closeEscape)
-      : () => document.removeEventListener("keydown", closeEscape);
+      selectedCard ||
+      card
+    ) {
+      document.addEventListener("keydown", closeEscape);
+    }
+    return () => document.removeEventListener("keydown", closeEscape);
   });
 
   return (
@@ -131,8 +156,8 @@ function App() {
           onEditAvatar={handleEditAvatarClick}
           onCardClick={handleCardClick}
           cards={cards}
-          onCardDelete={handleCardDelete}
           onCardLike={handleCardLike}
+          onConfirmPopupOpen={handleConfirmPopupOpen}
         />
 
         <EditProfilePopup
@@ -154,6 +179,12 @@ function App() {
         />
 
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+        <DeletePopup
+          card={card}
+          isOpen={isOpenPopup}
+          onDeleteCard={handleCardDelete}
+          onClose={closeAllPopups}
+        />
 
         <Footer />
       </div>

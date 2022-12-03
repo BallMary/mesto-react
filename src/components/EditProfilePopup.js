@@ -13,7 +13,7 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
   useEffect(() => {
     setName(currentUser.name);
     setDescription(currentUser.about);
-  }, [currentUser]);
+  }, [currentUser, isOpen]);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -28,15 +28,19 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
       if (!e.target.validity.valid) {
         setValid(false);
         setErrorMessageProfileName(e.target.validationMessage);
+        setName(e.target.value);
       } else {
         setErrorMessageProfileName("");
+        setName(e.target.value);
       }
     } else if (e.target.name === "about") {
       if (!e.target.validity.valid) {
         setValid(false);
         setErrorMessageProfileAbout(e.target.validationMessage);
+        setDescription(e.target.value);
       } else {
         setErrorMessageProfileAbout("");
+        setDescription(e.target.value);
       }
     } else if (!name || !description) {
       setValid(false);
@@ -74,9 +78,8 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         minLength="2"
         maxLength="40"
         required
-        onChange={(ev) => setName(ev.target.value)}
+        onChange={handleInput}
         value={name || ""}
-        onInput={(ev) => handleInput(ev)}
       />
       <div id="popup-edit-error" className="popup__input-error">
         <span className="popup__error-visible">{errorMessageProfileName}</span>
@@ -91,9 +94,8 @@ function EditProfilePopup({ isOpen, onClose, onUpdateUser }) {
         minLength="2"
         maxLength="200"
         required
-        onChange={(ev) => setDescription(ev.target.value)}
+        onChange={handleInput}
         value={description || ""}
-        onInput={(ev) => handleInput(ev)}
       />
       <div id="about-error" className="popup__input-error">
         <span className="popup__error-visible">{errorMessageProfileAbout}</span>
